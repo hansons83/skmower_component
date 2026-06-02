@@ -3,7 +3,7 @@
   "name": "SK-Mower",
   "codeowners": [Hansons83 (kubs83@gmail.com)],
   "config_flow": true,
-  "documentation": "https://github.com/hansons83/skmower",
+  "documentation": "https://github.com/hansons83/skmower_component",
   "integration_type": "device",
   "iot_class": "cloud_polling",
   "requirements": [],
