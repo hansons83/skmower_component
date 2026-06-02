@@ -1,0 +1,11 @@
+{
+  "domain": "skmover",
+  "name": "SK-Mower",
+  "codeowners": [Hansons83 (kubs83@gmail.com)],
+  "config_flow": true,
+  "documentation": "https://github.com/hansons83/skmower",
+  "integration_type": "device",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "version": "1.0.0"
+}

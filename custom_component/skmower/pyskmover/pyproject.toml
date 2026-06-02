@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "pyskmover"
+version = "1.0.0"
+description = "Python library for SK-Robot lawn mower cloud API communication"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+authors = [{ name = "pyskmover contributors" }]
+keywords = ["sk-robot", "lawn mower", "robotics", "home automation"]
+
+# No runtime dependencies – uses Python stdlib only (urllib, json, ssl, threading)
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[tool.setuptools.packages.find]
+where = [".."]
+include = ["pyskmover*"]
+exclude = ["pyskmover.tests*"]

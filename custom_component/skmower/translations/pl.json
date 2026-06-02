@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Połącz z SK-Mower",
+        "description": "Wprowadź dane logowania do konta SK-Robot oraz numer seryjny urządzenia.",
+        "data": {
+          "username": "Adres e-mail",
+          "password": "Hasło",
+          "device_sn": "Numer seryjny urządzenia",
+          "poll_interval": "Częstotliwość odświeżania (sekundy)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nie udało się połączyć z serwerem SK-Robot. Sprawdź połączenie sieciowe.",
+      "invalid_auth": "Nieprawidłowy login lub hasło.",
+      "unknown": "Wystąpił nieoczekiwany błąd. Sprawdź logi Home Assistant."
+    },
+    "abort": {
+      "already_configured": "To urządzenie jest już skonfigurowane."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opcje SK-Mower",
+        "data": {
+          "poll_interval": "Częstotliwość odświeżania (sekundy)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "lawn_mower": {
+      "lawn_mower": {
+        "state_attributes": {
+          "device_sn": { "name": "Numer seryjny" },
+          "device_id": { "name": "Identyfikator urządzenia" },
+          "fault_status": { "name": "Status błędu" },
+          "rain_flag": { "name": "Wykryto deszcz" },
+          "rain_delay_left": { "name": "Pozostały czas opóźnienia deszczowego" },
+          "station_flag": { "name": "Status stacji" },
+          "wifi_flag": { "name": "Status WiFi" },
+          "on_minutes": { "name": "Czas pracy" },
+          "total_minutes": { "name": "Całkowity czas pracy" },
+          "area": { "name": "Skoszona powierzchnia" },
+          "collected_at": { "name": "Ostatnia aktualizacja statusu" },
+          "battery": { "name": "Bateria" },
+          "work_status": { "name": "Status pracy" },
+          "work_status_code": { "name": "Kod statusu pracy" },
+          "rain_status": { "name": "Status deszczu" },
+          "border_length": { "name": "Długość krawędzi" },
+          "time_zone": { "name": "Strefa czasowa" },
+          "wifi_level": { "name": "Poziom sygnału WiFi" },
+          "model_name": { "name": "Nazwa modelu" },
+          "online_status": { "name": "Status online" },
+          "latitude": { "name": "Szerokość geograficzna" },
+          "longitude": { "name": "Długość geograficzna" },
+          "gps": { "name": "Status GPS" },
+          "firmware_version": { "name": "Wersja oprogramowania" },
+          "ip_address": { "name": "Adres IP" },
+          "work_status_api": { "name": "Surowy status (API)" },
+          "bound_at": { "name": "Sparowano dnia" },
+          "device_type": { "name": "Typ urządzenia" },
+          "last_synced": { "name": "Ostatnia synchronizacja" }
+        }
+      }
+    }
+  }
+}

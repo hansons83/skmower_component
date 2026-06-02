@@ -1,0 +1,71 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to SK-Mower",
+        "description": "Enter your SK-Robot cloud account credentials and the device serial number.",
+        "data": {
+          "username": "Email address",
+          "password": "Password",
+          "device_sn": "Device serial number",
+          "poll_interval": "Poll interval (seconds)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to SK-Robot server. Check your network connection.",
+      "invalid_auth": "Invalid username or password.",
+      "unknown": "Unexpected error. Check the Home Assistant logs."
+    },
+    "abort": {
+      "already_configured": "This device is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "SK-Mower options",
+        "data": {
+          "poll_interval": "Poll interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "lawn_mower": {
+      "lawn_mower": {
+        "state_attributes": {
+          "device_sn": { "name": "Serial number" },
+          "device_id": { "name": "Device ID" },
+          "fault_status": { "name": "Fault status" },
+          "rain_flag": { "name": "Rain detected" },
+          "rain_delay_left": { "name": "Rain delay remaining" },
+          "station_flag": { "name": "Station status" },
+          "wifi_flag": { "name": "WiFi status" },
+          "on_minutes": { "name": "Operating time" },
+          "total_minutes": { "name": "Total operating time" },
+          "area": { "name": "Mowed area" },
+          "collected_at": { "name": "Last status update" },
+          "battery": { "name": "Battery" },
+          "work_status": { "name": "Work status" },
+          "work_status_code": { "name": "Work status code" },
+          "rain_status": { "name": "Rain status" },
+          "border_length": { "name": "Border length" },
+          "time_zone": { "name": "Time zone" },
+          "wifi_level": { "name": "WiFi level" },
+          "model_name": { "name": "Model name" },
+          "online_status": { "name": "Online status" },
+          "latitude": { "name": "Latitude" },
+          "longitude": { "name": "Longitude" },
+          "gps": { "name": "GPS status" },
+          "firmware_version": { "name": "Firmware version" },
+          "ip_address": { "name": "IP address" },
+          "work_status_api": { "name": "Raw status (API)" },
+          "bound_at": { "name": "Bound at" },
+          "device_type": { "name": "Device type" },
+          "last_synced": { "name": "Last synchronized" }
+        }
+      }
+    }
+  }
+}

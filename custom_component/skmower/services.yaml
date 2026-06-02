@@ -1,0 +1,31 @@
+start_mowing:
+  name: Start mowing
+  description: Start the mower in normal mowing mode (mode 1).
+  target:
+    entity:
+      integration: skmover
+      domain: lawn_mower
+
+stop_mowing:
+  name: Stop mowing
+  description: Stop the mower and return it to idle (mode 0).
+  target:
+    entity:
+      integration: skmover
+      domain: lawn_mower
+
+start_border:
+  name: Start border mowing
+  description: Start the mower in border / edge mode (mode 4).
+  target:
+    entity:
+      integration: skmover
+      domain: lawn_mower
+
+force_poll:
+  name: Force poll
+  description: Immediately fetch the latest device state from the SK-Robot server.
+  target:
+    entity:
+      integration: skmover
+      domain: lawn_mower
