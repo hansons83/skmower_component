@@ -16,7 +16,7 @@ This is a custom integration for Home Assistant to control and monitor SK-Robot 
 1. Open HACS in your Home Assistant instance.
 2. Click on "Integrations".
 3. Click the three dots in the top right corner and select "Custom repositories".
-4. Add `https://github.com/hansons83/skmower` with category "Integration".
+4. Add `https://github.com/hansons83/skmower_component` with category "Integration".
 5. Search for "SK-Mower" and click "Download".
 6. Restart Home Assistant.
 
