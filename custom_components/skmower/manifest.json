@@ -1,7 +1,9 @@
 {
   "domain": "skmover",
   "name": "SK-Mower",
-  "codeowners": [Hansons83 (kubs83@gmail.com)],
+  "codeowners": [
+    "@Hansons83"
+  ],
   "config_flow": true,
   "documentation": "https://github.com/hansons83/skmower_component",
   "issue_tracker": "https://github.com/hansons83/skmower_component/issues",
