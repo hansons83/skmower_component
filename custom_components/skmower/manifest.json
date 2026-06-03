@@ -4,6 +4,7 @@
   "codeowners": [Hansons83 (kubs83@gmail.com)],
   "config_flow": true,
   "documentation": "https://github.com/hansons83/skmower_component",
+  "issue_tracker": "https://github.com/hansons83/skmower_component/issues",
   "integration_type": "device",
   "iot_class": "cloud_polling",
   "requirements": [],
