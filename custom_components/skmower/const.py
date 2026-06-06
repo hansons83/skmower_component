@@ -13,28 +13,6 @@ POLL_INTERVAL = 30  # seconds – matches pyskmover default
 MANUFACTURER = "SK-Robot"
 MODEL = "Robotic Mower"
 
-# Work status codes → human-readable (from observed traffic)
-WORK_STATUS_MAP = {
-    "en": {
-        "0": "stopped",
-        "1": "mowing",
-        "2": "going_home",
-        "3": "docked",
-        "4": "error",
-        "5": "paused",
-        "7": "border",
-    },
-    "pl": {
-        "0": "zatrzymany",
-        "1": "koszenie",
-        "2": "powrót do bazy",
-        "3": "zadokowany",
-        "4": "błąd",
-        "5": "wstrzymany",
-        "7": "koszenie krawędzi",
-    },
-}
-
 # Fault status codes
 FAULT_STATUS_NORMAL = "normal"
 
@@ -42,6 +20,7 @@ FAULT_STATUS_NORMAL = "normal"
 SERVICE_START_MOWING = "start_mowing"
 SERVICE_STOP_MOWING = "stop_mowing"
 SERVICE_START_BORDER = "start_border"
+SERVICE_RETURN_TO_DOCK = "return_to_dock"
 SERVICE_FORCE_POLL = "force_poll"
 
 # Attribute keys exposed on the lawn_mower entity

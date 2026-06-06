@@ -67,5 +67,18 @@
         }
       }
     }
+  },
+  "selector": {
+    "work_status": {
+      "options": {
+        "0": "gotowość",
+        "1": "koszenie",
+        "2": "powrót do bazy",
+        "3": "zadokowany/ładowanie",
+        "4": "błąd",
+        "5": "wstrzymany",
+        "7": "koszenie krawędzi"
+      }
+    }
   }
 }

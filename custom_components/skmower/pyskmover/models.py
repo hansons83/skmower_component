@@ -23,24 +23,27 @@ class WorkMode(IntEnum):
 
     Observed in traffic:
       0  – start mowing
-      1  – stop / return to dock
+      1  – stop
+      3  – return to dock
       4  – border / edge mode
     """
 
-    MOWING = 0
-    STOP = 1
+    STOP = 0
+    MOWING = 1
+    DOCK = 2
     BORDER = 4
 
 
 class WorkStatusCode(IntEnum):
     """workStatusCode reported in the device status response."""
 
-    IDLE = 0
+    READY = 0
     MOWING = 1
-    GOING_HOME = 2
+    RETURNING = 2
     CHARGING = 3
-    BORDER = 4
+    ERROR = 4
     PAUSED = 5
+    BORDER = 7
 
 
 # ---------------------------------------------------------------------------

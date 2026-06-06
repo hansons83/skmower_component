@@ -5,7 +5,7 @@ Integrates SK-Robot robotic lawn mowers using the pyskmover library.
 
 Domain: skmover
 Platforms: lawn_mower
-Services: start_mowing, stop_mowing, start_border, force_poll
+Services: start_mowing, stop_mowing, return_to_dock, start_border, force_poll
 """
 
 from __future__ import annotations
@@ -25,6 +25,7 @@ from .const import (
     DOMAIN,
     POLL_INTERVAL,
     SERVICE_FORCE_POLL,
+    SERVICE_RETURN_TO_DOCK,
     SERVICE_START_BORDER,
     SERVICE_START_MOWING,
     SERVICE_STOP_MOWING,
@@ -77,6 +78,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         """Handle skmover.start_border service call."""
         await _dispatch_command(hass, call, "start_border")
 
+    async def _handle_return_to_dock(call: ServiceCall) -> None:
+        """Handle skmover.return_to_dock service call."""
+        await _dispatch_command(hass, call, "return_to_dock")
+
     async def _handle_force_poll(call: ServiceCall) -> None:
         """Handle skmover.force_poll service call."""
         await _dispatch_command(hass, call, "force_poll")
@@ -91,6 +96,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
         hass.services.async_register(
             DOMAIN, SERVICE_START_BORDER, _handle_start_border, schema=_SERVICE_SCHEMA
+        )
+        hass.services.async_register(
+            DOMAIN, SERVICE_RETURN_TO_DOCK, _handle_return_to_dock, schema=_SERVICE_SCHEMA
         )
         hass.services.async_register(
             DOMAIN, SERVICE_FORCE_POLL, _handle_force_poll, schema=_SERVICE_SCHEMA
@@ -112,6 +120,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.services.async_remove(DOMAIN, SERVICE_START_MOWING)
         hass.services.async_remove(DOMAIN, SERVICE_STOP_MOWING)
         hass.services.async_remove(DOMAIN, SERVICE_START_BORDER)
+        hass.services.async_remove(DOMAIN, SERVICE_RETURN_TO_DOCK)
         hass.services.async_remove(DOMAIN, SERVICE_FORCE_POLL)
 
     return unload_ok
@@ -146,6 +155,8 @@ async def _dispatch_command(
                 await hass.async_add_executor_job(client.stop_mowing)
             elif command == "start_border":
                 await hass.async_add_executor_job(client.start_border)
+            elif command == "return_to_dock":
+                await hass.async_add_executor_job(client.return_to_dock)
             elif command == "force_poll":
                 await hass.async_add_executor_job(client.force_poll)
         except Exception as exc:  # noqa: BLE001

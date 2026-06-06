@@ -549,6 +549,9 @@ class SkMowerClient:
     def stop_mowing(self) -> None:
         self.set_work_mode(WorkMode.STOP)
 
+    def return_to_dock(self) -> None:
+        self.set_work_mode(WorkMode.DOCK)
+
     def start_border(self) -> None:
         self.set_work_mode(WorkMode.BORDER)
 

@@ -67,5 +67,18 @@
         }
       }
     }
+  },
+  "selector": {
+    "work_status": {
+      "options": {
+        "0": "ready",
+        "1": "mowing",
+        "2": "returning home",
+        "3": "docked/charging",
+        "4": "error",
+        "5": "paused",
+        "7": "border"
+      }
+    }
   }
 }

@@ -14,6 +14,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers import translation
 
 from .const import (
     ATTR_AREA,
@@ -46,7 +47,6 @@ from .const import (
     ATTR_WORK_STATUS_CODE,
     ATTR_WORK_STATUS_NAME,
     DOMAIN,
-    WORK_STATUS_MAP,
 )
 from .coordinator import SkMowerCoordinator
 from .entity import SkMowerEntity
@@ -55,15 +55,15 @@ _LOGGER = logging.getLogger(__name__)
 
 # Work status code → LawnMowerActivity mapping
 # Based on latest observations:
-# "0" -> stopped
-# "1" -> mowing
-# "2" -> returning home
-# "3" -> docked/charging
-# "4" -> error (abnormal)
+# "0" -> idea (idle/ready)
+# "1" -> work (mowing)
+# "2" -> return (returning home)
+# "3" -> charge (docked/charging)
+# "4" -> abnormal (error)
 # "5" -> paused
-# "7" -> border mowing
+# "7" -> edge (border mowing)
 _STATUS_TO_ACTIVITY: dict[str, LawnMowerActivity] = {
-    "0": LawnMowerActivity.DOCKED,
+    "0": LawnMowerActivity.PAUSED,
     "1": LawnMowerActivity.MOWING,
     "2": LawnMowerActivity.RETURNING,
     "3": LawnMowerActivity.DOCKED,
@@ -106,9 +106,9 @@ class SkMowerLawnMower(SkMowerEntity, LawnMowerEntity):
         # Default features
         features = LawnMowerEntityFeature(0)
 
-        # Kiedy Zatrzymany (0) można tylko wybrać powrót do bazy (DOCK)
+        # Kiedy Zatrzymany (0) można tylko wybrać powrót do bazy (DOCK)can start mowing
         if code == "0":
-            return LawnMowerEntityFeature.DOCK
+            return LawnMowerEntityFeature.DOCK | LawnMowerEntityFeature.START_MOWING
 
         # Kiedy błąd (4) można tylko zatrzymać (PAUSE/DOCK)
         if code == "4":
@@ -127,8 +127,7 @@ class SkMowerLawnMower(SkMowerEntity, LawnMowerEntity):
         # If mowing (1) or border (7), can pause or dock
         if code in ("1", "7"):
             return (
-                LawnMowerEntityFeature.PAUSE 
-                | LawnMowerEntityFeature.DOCK
+                LawnMowerEntityFeature.PAUSE
             )
 
         # Fallback to all if state unknown
@@ -182,14 +181,19 @@ class SkMowerLawnMower(SkMowerEntity, LawnMowerEntity):
             attrs[ATTR_DEVICE_ID] = status.device_id
             attrs[ATTR_BATTERY] = status.electricity
             attrs[ATTR_WORK_STATUS_CODE] = status.work_status_code
-            
-            # Use HA language for work status mapping
-            lang = self.hass.config.language
-            status_map = WORK_STATUS_MAP.get(lang, WORK_STATUS_MAP["en"])
-            attrs[ATTR_WORK_STATUS] = status_map.get(
-                str(status.work_status_code), status.work_status_code
+
+            # Use HA translation system for work status mapping
+            # This follows the pattern in selector/work_status/options in translations
+            code = str(status.work_status_code)
+            attrs[ATTR_WORK_STATUS] = translation.async_translate_state(
+                self.hass,
+                self.entity_id,
+                DOMAIN,
+                "work_status",
+                None,  # device_class
+                code,
             )
-            
+
             attrs[ATTR_WORK_STATUS_NAME] = status.work_status_name
             attrs[ATTR_FAULT_STATUS] = status.fault_status_code
             attrs[ATTR_RAIN_STATUS] = status.rain_status_code
@@ -239,11 +243,11 @@ class SkMowerLawnMower(SkMowerEntity, LawnMowerEntity):
         await self._async_send_command("start_mowing")
 
     async def async_dock(self) -> None:
-        """Send mower back to dock / stop – mode 0."""
-        await self._async_send_command("stop_mowing")
+        """Send mower back to dock / stop."""
+        await self._async_send_command("return_to_dock")
 
     async def async_pause(self) -> None:
-        """Pause mowing – mode 0 (same as stop for this device)."""
+        """Pause mowing."""
         await self._async_send_command("stop_mowing")
 
     async def _async_send_command(self, command: str) -> None:
@@ -257,6 +261,8 @@ class SkMowerLawnMower(SkMowerEntity, LawnMowerEntity):
                 await self.hass.async_add_executor_job(client.start_mowing)
             elif command == "stop_mowing":
                 await self.hass.async_add_executor_job(client.stop_mowing)
+            elif command == "return_to_dock":
+                await self.hass.async_add_executor_job(client.return_to_dock)
             elif command == "start_border":
                 await self.hass.async_add_executor_job(client.start_border)
             else:
