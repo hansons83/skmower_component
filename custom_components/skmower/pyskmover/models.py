@@ -328,6 +328,25 @@ class DeviceSetting:
 
 
 @dataclass
+class DeviceMap:
+    """
+    Work map data returned by GET /api/map/work-map/newest/1/{deviceSn}.
+    """
+
+    device_sn: str
+    area: float = 0.0
+    perimeter: float = 0.0
+
+    @classmethod
+    def from_dict(cls, d: dict) -> "DeviceMap":
+        return cls(
+            device_sn=d.get("deviceSn", ""),
+            area=float(d.get("area", 0.0)),
+            perimeter=float(d.get("perimeter", 0.0)),
+        )
+
+
+@dataclass
 class DeviceStatus:
     """
     Real-time operational state returned alongside (or in place of) the full

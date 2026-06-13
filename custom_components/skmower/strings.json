@@ -34,37 +34,6 @@
   "entity": {
     "lawn_mower": {
       "lawn_mower": {
-        "state_attributes": {
-          "device_sn": { "name": "Serial number" },
-          "device_id": { "name": "Device ID" },
-          "fault_status": { "name": "Fault status" },
-          "rain_flag": { "name": "Rain detected" },
-          "rain_delay_left": { "name": "Rain delay remaining" },
-          "station_flag": { "name": "Station status" },
-          "wifi_flag": { "name": "WiFi status" },
-          "on_minutes": { "name": "Operating time" },
-          "total_minutes": { "name": "Total operating time" },
-          "area": { "name": "Mowed area" },
-          "collected_at": { "name": "Last status update" },
-          "battery": { "name": "Battery" },
-          "work_status": { "name": "Work status" },
-          "work_status_code": { "name": "Work status code" },
-          "rain_status": { "name": "Rain status" },
-          "border_length": { "name": "Border length" },
-          "time_zone": { "name": "Time zone" },
-          "wifi_level": { "name": "WiFi level" },
-          "model_name": { "name": "Model name" },
-          "online_status": { "name": "Online status" },
-          "latitude": { "name": "Latitude" },
-          "longitude": { "name": "Longitude" },
-          "gps": { "name": "GPS status" },
-          "firmware_version": { "name": "Firmware version" },
-          "ip_address": { "name": "IP address" },
-          "work_status_api": { "name": "Raw status (API)" },
-          "bound_at": { "name": "Bound at" },
-          "device_type": { "name": "Device type" },
-          "last_synced": { "name": "Last synchronized" }
-        }
       }
     }
   }

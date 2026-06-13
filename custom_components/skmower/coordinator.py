@@ -79,6 +79,7 @@ class SkMowerCoordinator(DataUpdateCoordinator):
             poll_interval=poll_interval,
             on_status=self._on_status,
             on_setting=self._on_setting,
+            on_map=self._on_map,
         )
         self._client.language = self.hass.config.language
 
@@ -143,6 +144,13 @@ class SkMowerCoordinator(DataUpdateCoordinator):
             self.hass.loop,
         )
 
+    def _on_map(self, device_map: Any) -> None:
+        """Called by pyskmover when a new DeviceMap arrives."""
+        asyncio.run_coroutine_threadsafe(
+            self._async_push_update(),
+            self.hass.loop,
+        )
+
     async def _async_push_update(self) -> None:
         """Push fresh data to all listeners without a new HTTP call."""
         self.async_set_updated_data(self._build_data_snapshot())
@@ -158,18 +166,21 @@ class SkMowerCoordinator(DataUpdateCoordinator):
 
         status = self._client.get_device_status()
         setting = self._client.get_device_setting()
+        device_map = self._client.get_device_map()
 
         # Log data availability for debugging
         _LOGGER.debug(
-            "Building snapshot: status=%s, setting=%s, connected=%s",
+            "Building snapshot: status=%s, setting=%s, map=%s, connected=%s",
             "yes" if status else "no",
             "yes" if setting else "no",
+            "yes" if device_map else "no",
             self._client.is_connected(),
         )
 
         data: dict = {
             "status": status,
             "setting": setting,
+            "map": device_map,
             "connected": self._client.is_connected(),
         }
         return data

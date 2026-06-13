@@ -48,6 +48,12 @@ class SkMowerEntity(CoordinatorEntity[SkMowerCoordinator]):
         return data.get("setting")
 
     @property
+    def _map(self):
+        """Return the latest DeviceMap or None."""
+        data = self.coordinator.data or {}
+        return data.get("map")
+
+    @property
     def _connected(self) -> bool:
         """Return True if the mower is reachable."""
         data = self.coordinator.data or {}

@@ -44,6 +44,7 @@ from .exceptions import (
     SkMowerError,
 )
 from .models import (
+    DeviceMap,
     DeviceSetting,
     DeviceStatus,
     SetWorkStatusRequest,
@@ -299,13 +300,14 @@ class _ConnectionThread(threading.Thread):
 
 
 class _SharedState:
-    __slots__ = ("token", "user_info", "device_status", "device_setting")
+    __slots__ = ("token", "user_info", "device_status", "device_setting", "device_map")
 
     def __init__(self) -> None:
         self.token: Optional[TokenResponse] = None
         self.user_info: Optional[UserAppInfo] = None
         self.device_status: Optional[DeviceStatus] = None
         self.device_setting: Optional[DeviceSetting] = None
+        self.device_map: Optional[DeviceMap] = None
 
 
 # ---------------------------------------------------------------------------
@@ -329,6 +331,7 @@ class SkMowerClient:
         poll_interval: int = _DEFAULT_POLL_INTERVAL,
         on_status: Optional[Callable[[DeviceStatus], None]] = None,
         on_setting: Optional[Callable[[DeviceSetting], None]] = None,
+        on_map: Optional[Callable[[DeviceMap], None]] = None,
     ) -> None:
         self._username = username
         self._password = password
@@ -336,6 +339,7 @@ class SkMowerClient:
         self._poll_interval = poll_interval
         self._on_status = on_status
         self._on_setting = on_setting
+        self._on_map = on_map
 
         self._lock = threading.RLock()
         self._stop_event = threading.Event()
@@ -434,7 +438,7 @@ class SkMowerClient:
                     language=self.language,
                 )
                 if map_data:
-                    self._update_status(map_data)
+                    self._update_map(map_data)
             except Exception as exc:
                 logger.warning("Failed to poll newest work map: %s", exc)
 
@@ -459,7 +463,7 @@ class SkMowerClient:
         # We check for deviceSn to ensure it's a valid status payload
         if "deviceSn" not in data:
             return
-            
+
         status = DeviceStatus.from_dict(data)
         with self._lock:
             self._state.device_status = status
@@ -470,6 +474,23 @@ class SkMowerClient:
                 self._on_status(status)
             except Exception:  # noqa: BLE001
                 logger.exception("Exception in on_status callback")
+
+    def _update_map(self, data: dict) -> None:
+        """Parse map data and merge into shared state."""
+        # We check for deviceSn to ensure it's a valid map payload
+        if "deviceSn" not in data:
+            return
+
+        device_map = DeviceMap.from_dict(data)
+        with self._lock:
+            self._state.device_map = device_map
+
+        # Fire map callback
+        if self._on_map:
+            try:
+                self._on_map(device_map)
+            except Exception:  # noqa: BLE001
+                logger.exception("Exception in on_map callback")
 
     def _get_token(self) -> str:
         with self._lock:
@@ -488,6 +509,10 @@ class SkMowerClient:
     def get_device_setting(self) -> Optional[DeviceSetting]:
         with self._lock:
             return self._state.device_setting
+
+    def get_device_map(self) -> Optional[DeviceMap]:
+        with self._lock:
+            return self._state.device_map
 
     def get_electricity(self) -> Optional[int]:
         with self._lock:

@@ -33,10 +33,13 @@ from .const import (
     ATTR_IP_ADDRESS,
     ATTR_LAST_SYNCED,
     ATTR_LATITUDE,
+    ATTR_MAP_AREA,
+    ATTR_MAP_PERIMETER,
     ATTR_LONGITUDE,
     ATTR_MODEL_NAME,
     ATTR_ONLINE_STATUS,
     ATTR_RAIN_FLAG,
+    ATTR_SCHEDULE,
     ATTR_RAIN_STATUS,
     ATTR_STATION_FLAG,
     ATTR_TIME_ZONE,
@@ -96,40 +99,6 @@ class SkMowerLawnMower(SkMowerEntity, LawnMowerEntity):
 
     @property
     def supported_features(self) -> LawnMowerEntityFeature:
-        """Dynamic supported features based on state."""
-        status = self._status
-        if status is None:
-            return LawnMowerEntityFeature(0)
-
-        code = str(status.work_status_code)
-        
-        # Default features
-        features = LawnMowerEntityFeature(0)
-
-        # Kiedy Zatrzymany (0) można tylko wybrać powrót do bazy (DOCK)can start mowing
-        if code == "0":
-            return LawnMowerEntityFeature.DOCK | LawnMowerEntityFeature.START_MOWING
-
-        # Kiedy błąd (4) można tylko zatrzymać (PAUSE/DOCK)
-        if code == "4":
-            return LawnMowerEntityFeature.DOCK | LawnMowerEntityFeature.PAUSE
-
-        # Kiedy Powrót (2) można tylko zatrzymać (PAUSE)
-        if code == "2":
-            return LawnMowerEntityFeature.PAUSE | LawnMowerEntityFeature.DOCK
-
-        # Brzeg (7) można wybrac tylko gdy zadokowany (3). 
-        # START_MOWING jest ogólnym startem.
-        if code == "3":
-            # Docked/Charging - can start mowing
-            return LawnMowerEntityFeature.START_MOWING
-
-        # If mowing (1) or border (7), can pause or dock
-        if code in ("1", "7"):
-            return (
-                LawnMowerEntityFeature.PAUSE
-            )
-
         # Fallback to all if state unknown
         return (
             LawnMowerEntityFeature.START_MOWING
@@ -147,10 +116,6 @@ class SkMowerLawnMower(SkMowerEntity, LawnMowerEntity):
         status = self._status
         if status is None or status.work_status_code is None:
             return None
-
-        # Logic for 'Returning home' based on observed pause flag
-        if status.pause:
-            return LawnMowerActivity.RETURNING
 
         # Ensure we use string for lookup
         code = str(status.work_status_code)
@@ -175,6 +140,7 @@ class SkMowerLawnMower(SkMowerEntity, LawnMowerEntity):
         attrs: dict[str, Any] = {}
         status = self._status
         setting = self._setting
+        device_map = self._map
 
         if status:
             attrs[ATTR_DEVICE_SN] = status.device_sn
@@ -182,17 +148,7 @@ class SkMowerLawnMower(SkMowerEntity, LawnMowerEntity):
             attrs[ATTR_BATTERY] = status.electricity
             attrs[ATTR_WORK_STATUS_CODE] = status.work_status_code
 
-            # Use HA translation system for work status mapping
-            # This follows the pattern in selector/work_status/options in translations
-            code = str(status.work_status_code)
-            attrs[ATTR_WORK_STATUS] = translation.async_translate_state(
-                self.hass,
-                self.entity_id,
-                DOMAIN,
-                "work_status",
-                None,  # device_class
-                code,
-            )
+            attrs[ATTR_WORK_STATUS] = status.work_status_name
 
             attrs[ATTR_WORK_STATUS_NAME] = status.work_status_name
             attrs[ATTR_FAULT_STATUS] = status.fault_status_code
@@ -225,12 +181,29 @@ class SkMowerLawnMower(SkMowerEntity, LawnMowerEntity):
             attrs["zone_open"] = setting.zone_open_flag
             attrs["ultra_flag"] = setting.ultra_flag
             attrs["now_time"] = setting.now_time
+
+            # Extract schedule list
+            if setting.device_schedule_list:
+                attrs[ATTR_SCHEDULE] = [
+                    {
+                        "day": s.day_of_week,
+                        "start": s.start_at,
+                        "end": s.end_at,
+                        "trim": s.trim_flag,
+                    }
+                    for s in setting.device_schedule_list
+                ]
+
             # Capability flags
             attrs["multizone_support"] = setting.multizone_support
             attrs["rain_support"] = setting.rain_support
             attrs["ultra_support"] = setting.ultra_support
             attrs["led_support"] = setting.led_support
             attrs["gps_support"] = setting.gps_support
+
+        if device_map:
+            attrs[ATTR_MAP_AREA] = device_map.area
+            attrs[ATTR_MAP_PERIMETER] = device_map.perimeter
 
         return attrs
 
