@@ -29,20 +29,22 @@ from .const import (
     ATTR_ON_MINUTES,
     ATTR_RAIN_DELAY_LEFT,
     ATTR_FIRMWARE,
-    ATTR_GPS,
+    ATTR_DEVICE_MODEL_NAME,
     ATTR_IP_ADDRESS,
     ATTR_LAST_SYNCED,
-    ATTR_LATITUDE,
     ATTR_MAP_AREA,
     ATTR_MAP_PERIMETER,
-    ATTR_LONGITUDE,
     ATTR_MODEL_NAME,
+    ATTR_NOW_TIME,
     ATTR_ONLINE_STATUS,
+    ATTR_RAIN_DELAY_DURATION,
     ATTR_RAIN_FLAG,
     ATTR_SCHEDULE,
+    ATTR_SCHEDULE_AUTO,
     ATTR_RAIN_STATUS,
     ATTR_STATION_FLAG,
     ATTR_TIME_ZONE,
+    ATTR_TIME_ZONE_CODE,
     ATTR_TOTAL_MINUTES,
     ATTR_WIFI_FLAG,
     ATTR_WIFI_LEVEL,
@@ -147,40 +149,30 @@ class SkMowerLawnMower(SkMowerEntity, LawnMowerEntity):
             attrs[ATTR_DEVICE_ID] = status.device_id
             attrs[ATTR_BATTERY] = status.electricity
             attrs[ATTR_WORK_STATUS_CODE] = status.work_status_code
-
-            attrs[ATTR_WORK_STATUS] = status.work_status_name
-
             attrs[ATTR_WORK_STATUS_NAME] = status.work_status_name
             attrs[ATTR_FAULT_STATUS] = status.fault_status_code
             attrs[ATTR_RAIN_STATUS] = status.rain_status_code
             attrs[ATTR_RAIN_FLAG] = status.rain_flag
             attrs[ATTR_RAIN_DELAY_LEFT] = status.rain_delay_left
-            attrs[ATTR_STATION_FLAG] = status.station_flag
             attrs[ATTR_WIFI_FLAG] = status.wifi_flag
             attrs[ATTR_WIFI_LEVEL] = status.wifi_lv
-            attrs[ATTR_ONLINE_STATUS] = status.online_flag
-            attrs[ATTR_LATITUDE] = status.lat
-            attrs[ATTR_LONGITUDE] = status.lng
-            attrs[ATTR_GPS] = status.gps
-            attrs[ATTR_IP_ADDRESS] = status.ip_addr
             attrs[ATTR_MODEL_NAME] = status.model_name
-            attrs[ATTR_FIRMWARE] = status.firmware_version
-            attrs[ATTR_DEVICE_TYPE] = status.device_type
             attrs[ATTR_BOUND_AT] = status.bound_at
-            attrs[ATTR_ON_MINUTES] = status.on_min
-            attrs[ATTR_TOTAL_MINUTES] = status.total_min
-            attrs[ATTR_AREA] = status.area
             attrs[ATTR_COLLECTED_AT] = status.collected_at
+
+            # Extract additional meaningful fields from status
+            if hasattr(status, "extra") and isinstance(status.extra, dict):
+                if val := status.extra.get("deviceModelName"):
+                    attrs[ATTR_DEVICE_MODEL_NAME] = val
 
         if setting:
             attrs[ATTR_BORDER_LENGTH] = setting.border_length
             attrs[ATTR_TIME_ZONE] = setting.time_zone_id
             attrs[ATTR_LAST_SYNCED] = setting.updated_at
-            attrs["rain_delay_duration"] = setting.rain_delay_duration
-            attrs["schedule_auto"] = setting.schedule_auto_flag
-            attrs["zone_open"] = setting.zone_open_flag
-            attrs["ultra_flag"] = setting.ultra_flag
-            attrs["now_time"] = setting.now_time
+            attrs[ATTR_RAIN_DELAY_DURATION] = setting.rain_delay_duration
+            attrs[ATTR_SCHEDULE_AUTO] = setting.schedule_auto_flag
+            attrs[ATTR_NOW_TIME] = setting.now_time
+            attrs[ATTR_TIME_ZONE_CODE] = setting.time_zone_code
 
             # Extract schedule list
             if setting.device_schedule_list:
@@ -194,16 +186,9 @@ class SkMowerLawnMower(SkMowerEntity, LawnMowerEntity):
                     for s in setting.device_schedule_list
                 ]
 
-            # Capability flags
-            attrs["multizone_support"] = setting.multizone_support
-            attrs["rain_support"] = setting.rain_support
-            attrs["ultra_support"] = setting.ultra_support
-            attrs["led_support"] = setting.led_support
-            attrs["gps_support"] = setting.gps_support
-
         if device_map:
             attrs[ATTR_MAP_AREA] = device_map.area
-            attrs[ATTR_MAP_PERIMETER] = device_map.perimeter
+            attrs[ATTR_MAP_PERIMETER] = device_map.borderLength
 
         return attrs
 
